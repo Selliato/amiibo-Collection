@@ -1,0 +1,134 @@
+{
+
+    "COLLECTIONS": [
+
+    {
+
+    "id":0x00,
+    name:"Mario Bros",
+
+    "CHARACTERS": [
+
+        {
+        "id" : 0x00,
+        "name" : "MARIO",
+        "VARIANTS" : [
+            {
+            "variant" : 0x01,
+            "name" : "DR"
+            }],
+        "COLORS" : [
+            {
+            "amiiboID" : 0x003C,
+            "name" : "GOLD"
+            },
+            {
+            "amiiboID" : 0x003D,
+            "name" : "SILVER"
+            },
+            {
+            "amiiboID" : 0x0238,
+            "name" : "CLASSIC"
+            },
+            {
+            "amiiboID" : 0x0239,
+            "name" : "MODERN"
+            }
+        ]
+        },
+        {
+        "id" : 0x01,
+        "name" : "LUIGI"
+        },
+        {
+        "id" : 0x02,
+        "name" : "PEACH"
+        },
+        {
+        "id" : 0x03,
+        "name" : "YOSHI",
+		"VARIANTS" : [
+            {
+            "variant" : 0x01,
+            "name" : "YARN"
+            }],
+		"COLORS" : [
+            {
+            "amiiboID" : 0x0041,
+            "name" : "GREEN"
+            },
+            {
+            "amiiboID" : 0x0042,
+            "name" : "PINK"
+            },
+            {
+            "amiiboID" : 0x0043,
+            "name" : "BLUE"
+            },
+            {
+            "amiiboID" : 0x023E,
+            "name" : "MEGA"
+            }
+        ]
+        },
+        {
+        "id" : 0x04,
+        "name" : "ROSALINA",
+		"VARIANTS" : [
+            {
+            "variant" : 0x01,
+            "name" : "ANDLUMA"
+            }]
+        },
+        {
+        "id" : 0x05,
+        "name" : "BOWSER",
+		"VARIANTS" : [
+            {
+            "variant" : 0xFF,
+            "name" : "HAMMERSLAM"
+            }]
+        },
+        {
+        "id" : 0x06,
+        "name" : "BOWSERJR"
+        },
+        {
+        "id" : 0x07,
+        "name" : "WARIO"
+        },
+        {
+        "id" : 0x08,
+        "name" : "DONKEYKONG",
+		"VARIANTS" : [
+            {
+            "variant" : 0xFF,
+            "name" : "TURBOCHARGE"
+            }]
+        },
+        {
+        "id" : 0x09,
+        "name" : "DIDDYKONG"
+        },
+        {
+        "id" : 0x0A,
+        "name" : "TOAD"
+        },
+        {
+        "id" : 0x13,
+        "name" : "DAISY"
+        },
+        {
+        "id" : 0x14,
+        "name" : "WALUIGI"
+        },
+        {
+        "id" : 0x17,
+        "name" : "BOO"
+        }
+
+    ]}
+
+    ]
+
+}
