@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
-
+#include <string>
+#include <vector>
+#include <fstream>
 #include <3ds.h>
 #include "json/json.h"
 
@@ -13,6 +15,62 @@ NFC_TagState prevstate, curstate;
 NFC_AmiiboConfig amiiboconfig;
 PrintConsole topScreen, bottomScreen;
 bool dataLoaded = 0;
+
+Json::Reader reader;
+Json::Value collectDB;
+Json::Value seriesDB;
+Json::Value typesDB;
+
+std::string getCollection(NFC_AmiiboConfig aConfig)
+{
+
+    u8 subcollec = aConfig.characterID[1]>>4;
+    u16 collectID = aConfig.characterID[0];
+
+    collectID = collectID<<4;
+    collectID = collectID + subcollec;
+
+    for (unsigned int i=0; i<collectDB.size(); i++) {
+
+            if(collectDB[i]["id"] == collectID)
+            {
+                return collectDB[i]["name"].asString();
+            }
+
+    }
+
+    return "unknown (" + std::to_string(collectID) + ")";
+}
+
+std::string getSerie(NFC_AmiiboConfig aConfig)
+{
+
+    for (unsigned int i=0; i<seriesDB.size(); i++) {
+
+            if(seriesDB[i]["id"] == aConfig.series)
+            {
+                return seriesDB[i]["name"].asString();
+            }
+
+    }
+
+    return "unknown (" + std::to_string(aConfig.series) + ")";
+}
+
+std::string getType(NFC_AmiiboConfig aConfig)
+{
+
+    for (unsigned int i=0; i<typesDB.size(); i++) {
+
+            if(typesDB[i]["id"] == aConfig.type)
+            {
+                return typesDB[i]["name"].asString();
+            }
+
+    }
+
+    return "unknown (" + std::to_string(aConfig.type) + ")";
+}
 
 Result nfc()
 {
@@ -81,33 +139,17 @@ Result nfc()
         consoleSelect(&topScreen);
         consoleInit(GFX_TOP, NULL);
 
-        printf("Collection : %02x\n\n", amiiboconfig.characterID[0]);
+        printf("Collection : %s\n\n", getCollection(amiiboconfig).c_str());
 
         printf("Character : %02x\n\n", amiiboconfig.characterID[1]);
 
         printf("Variant : %02x\n\n", amiiboconfig.characterID[2]);
 
-        printf("Series : %02x\n\n", amiiboconfig.series);
+        printf("Series : %s\n\n", getSerie(amiiboconfig).c_str());
 
         printf("Amiibo ID : %04x\n\n", amiiboconfig.amiiboID);
 
-        printf("Type : ");
-        if(amiiboconfig.type==0)
-        {
-            printf("Figure\n\n");
-        }
-        else if(amiiboconfig.type==1)
-        {
-            printf("Card\n\n");
-        }
-        else if(amiiboconfig.type==2)
-        {
-            printf("Plush\n\n");
-        }
-        else
-        {
-            printf("Unknown(%02x)",amiiboconfig.type);
-        }
+        printf("Type : : %s\n\n", getType(amiiboconfig).c_str());
 
         dataLoaded = 1;
 
@@ -132,8 +174,52 @@ int main()
 	gfxInitDefault();
 	consoleInit(GFX_TOP, &topScreen);
 	consoleInit(GFX_BOTTOM, &bottomScreen);
+    consoleSelect(&bottomScreen);
 
-	romfsInit();
+	Result rc = romfsInit();
+
+	if (rc)
+		printf("romfsInit: %08lX\n", rc);
+	else
+	{
+		printf("romfs Init Successful!\n");
+	}
+
+
+	//Load database
+
+	std::ifstream ifsCollection("romfs:/collections.json");
+	bool parsingSuccessful = reader.parse(ifsCollection, collectDB);
+	if(parsingSuccessful)
+    {
+        printf("collections.json loaded\n\n");
+    }
+    else
+    {
+        printf("error while parsing collections.json\n\n");
+    }
+
+    std::ifstream ifsSeries("romfs:/series.json");
+	parsingSuccessful = reader.parse(ifsSeries, seriesDB);
+	if(parsingSuccessful)
+    {
+        printf("series.json loaded\n\n");
+    }
+    else
+    {
+        printf("series.json\n\n");
+    }
+
+    std::ifstream ifsTypes("romfs:/types.json");
+	parsingSuccessful = reader.parse(ifsTypes, typesDB);
+	if(parsingSuccessful)
+    {
+        printf("types.json loaded\n\n");
+    }
+    else
+    {
+        printf("error while parsing types.json\n\n");
+    }
 
 	// Main loop
 	while (aptMainLoop())
