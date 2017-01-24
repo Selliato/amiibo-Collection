@@ -1,10 +1,17 @@
 #include <stdio.h>
+#include <cstdio>
 #include <string.h>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <3ds.h>
+#include <inttypes.h>
 #include "amiiboData.hpp"
+
+#define NUM_THREADS 2
+
+u32 threadA_stack[0x400];
+u32 threadB_stack[0x400];
 
 Result ret=0;
 u32 pos;
@@ -16,7 +23,7 @@ NFC_AmiiboConfig amiiboconfig;
 PrintConsole topScreen, bottomScreen;
 bool dataLoaded = 0;
 bool scan = 1;
-Thread NFCThread;
+Handle thread[NUM_THREADS];
 
 void nfc()
 {
@@ -120,6 +127,7 @@ ThreadFunc nfcLoop()
     while(scan)
     {
         nfc();
+        svcSleepThread(2000000000);
     }
 
     return 0;
@@ -153,7 +161,9 @@ int main()
 	//Thread mainThread = threadGetCurrent();
 	// int mainPriority = svcGetThreadPriority(mainThread);
 
-	NFCThread = threadCreate(nfcEntry,0,1000,63,0,1);
+	Result thread_results[NUM_THREADS];
+
+	thread_results[0] = svcCreateThread(&thread[0], nfcEntry, 0, threadA_stack + 0x400, 0x3F, 0xFFFFFFFE);
 
 	// Main loop
 	while (aptMainLoop())
