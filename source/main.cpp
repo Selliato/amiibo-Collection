@@ -4,7 +4,7 @@
 #include <vector>
 #include <fstream>
 #include <3ds.h>
-#include "json/json.h"
+#include "amiiboData.hpp"
 
 Result ret=0;
 u32 pos;
@@ -15,66 +15,13 @@ NFC_TagState prevstate, curstate;
 NFC_AmiiboConfig amiiboconfig;
 PrintConsole topScreen, bottomScreen;
 bool dataLoaded = 0;
+bool scan = 1;
+Thread NFCThread;
 
-Json::Reader reader;
-Json::Value collectDB;
-Json::Value seriesDB;
-Json::Value typesDB;
-
-std::string getCollection(NFC_AmiiboConfig aConfig)
+void nfc()
 {
 
-    u8 subcollec = aConfig.characterID[1]>>4;
-    u16 collectID = aConfig.characterID[0];
-
-    collectID = collectID<<4;
-    collectID = collectID + subcollec;
-
-    for (unsigned int i=0; i<collectDB.size(); i++) {
-
-            if(collectDB[i]["id"] == collectID)
-            {
-                return collectDB[i]["name"].asString();
-            }
-
-    }
-
-    return "unknown (" + std::to_string(collectID) + ")";
-}
-
-std::string getSerie(NFC_AmiiboConfig aConfig)
-{
-
-    for (unsigned int i=0; i<seriesDB.size(); i++) {
-
-            if(seriesDB[i]["id"] == aConfig.series)
-            {
-                return seriesDB[i]["name"].asString();
-            }
-
-    }
-
-    return "unknown (" + std::to_string(aConfig.series) + ")";
-}
-
-std::string getType(NFC_AmiiboConfig aConfig)
-{
-
-    for (unsigned int i=0; i<typesDB.size(); i++) {
-
-            if(typesDB[i]["id"] == aConfig.type)
-            {
-                return typesDB[i]["name"].asString();
-            }
-
-    }
-
-    return "unknown (" + std::to_string(aConfig.type) + ")";
-}
-
-Result nfc()
-{
-
+    consoleSelect(&bottomScreen);
     ret = nfcGetTagState(&curstate);
     if(R_FAILED(ret))
     {
@@ -100,7 +47,6 @@ Result nfc()
             if(R_FAILED(ret))
             {
                 printf("nfcStartScanning() failed.\n");
-                return ret;
             }
             else
             {
@@ -141,11 +87,13 @@ Result nfc()
 
         printf("Collection : %s\n\n", getCollection(amiiboconfig).c_str());
 
-        printf("Character : %02x\n\n", amiiboconfig.characterID[1]);
+        printf("Character : %s\n\n", getCharacter(amiiboconfig).c_str());
 
-        printf("Variant : %02x\n\n", amiiboconfig.characterID[2]);
+        printf("Variant : %s\n\n", getVariant(amiiboconfig).c_str());
 
-        printf("Series : %s\n\n", getSerie(amiiboconfig).c_str());
+        printf("Color : %s\n\n", getColor(amiiboconfig).c_str());
+
+        printf("Series : %s\n\n", getSeries(amiiboconfig).c_str());
 
         printf("Amiibo ID : %04x\n\n", amiiboconfig.amiiboID);
 
@@ -163,6 +111,15 @@ Result nfc()
         dataLoaded = 0;
         nfcStopScanning();
 
+    }
+
+}
+
+ThreadFunc nfcLoop()
+{
+    while(scan)
+    {
+        nfc();
     }
 
     return 0;
@@ -188,38 +145,15 @@ int main()
 
 	//Load database
 
-	std::ifstream ifsCollection("romfs:/collections.json");
-	bool parsingSuccessful = reader.parse(ifsCollection, collectDB);
-	if(parsingSuccessful)
-    {
-        printf("collections.json loaded\n\n");
-    }
-    else
-    {
-        printf("error while parsing collections.json\n\n");
-    }
+	loadData();
 
-    std::ifstream ifsSeries("romfs:/series.json");
-	parsingSuccessful = reader.parse(ifsSeries, seriesDB);
-	if(parsingSuccessful)
-    {
-        printf("series.json loaded\n\n");
-    }
-    else
-    {
-        printf("series.json\n\n");
-    }
+	ThreadFunc nfcEntry;
+	nfcEntry = (*nfcLoop)();
 
-    std::ifstream ifsTypes("romfs:/types.json");
-	parsingSuccessful = reader.parse(ifsTypes, typesDB);
-	if(parsingSuccessful)
-    {
-        printf("types.json loaded\n\n");
-    }
-    else
-    {
-        printf("error while parsing types.json\n\n");
-    }
+	//Thread mainThread = threadGetCurrent();
+	// int mainPriority = svcGetThreadPriority(mainThread);
+
+	NFCThread = threadCreate(nfcEntry,0,1000,63,0,1);
 
 	// Main loop
 	while (aptMainLoop())
@@ -230,11 +164,11 @@ int main()
 		u32 kDown = hidKeysDown();
 
 		if (kDown & KEY_START)
+            scan = 0;
 			break; // break in order to return to hbmenu
 
         consoleSelect(&bottomScreen);
 
-        nfc();
 	}
 
 	gfxExit();

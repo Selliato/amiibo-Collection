@@ -1,134 +1,118 @@
-{
-
-    "COLLECTIONS": [
-
-    {
-
-    "id":0x00,
-    "name":"Mario Bros",
-
-    "CHARACTERS": [
-
+[{"id":0,"CHARACTERS": [
         {
-        "id" : 0x00,
+        "id" : 0,
         "name" : "MARIO",
         "VARIANTS" : [
             {
-            "variant" : 0x01,
+            "variant" : 1,
             "name" : "DR"
             }],
         "COLORS" : [
             {
-            "amiiboID" : 0x003C,
+            "amiiboID" : 60,
             "name" : "GOLD"
             },
             {
-            "amiiboID" : 0x003D,
+            "amiiboID" : 61,
             "name" : "SILVER"
             },
             {
-            "amiiboID" : 0x0238,
+            "amiiboID" : 568,
             "name" : "CLASSIC"
             },
             {
-            "amiiboID" : 0x0239,
+            "amiiboID" : 569,
             "name" : "MODERN"
             }
         ]
         },
         {
-        "id" : 0x01,
+        "id" : 1,
         "name" : "LUIGI"
         },
         {
-        "id" : 0x02,
+        "id" : 2,
         "name" : "PEACH"
         },
         {
-        "id" : 0x03,
+        "id" : 3,
         "name" : "YOSHI",
 		"VARIANTS" : [
             {
-            "variant" : 0x01,
+            "variant" : 1,
             "name" : "YARN"
             }],
 		"COLORS" : [
             {
-            "amiiboID" : 0x0041,
-            "name" : "GREEN"
-            },
-            {
-            "amiiboID" : 0x0042,
+            "amiiboID" : 66,
             "name" : "PINK"
             },
             {
-            "amiiboID" : 0x0043,
+            "amiiboID" : 67,
             "name" : "BLUE"
             },
             {
-            "amiiboID" : 0x023E,
+            "amiiboID" : 574,
             "name" : "MEGA"
             }
         ]
         },
         {
-        "id" : 0x04,
+        "id" : 4,
         "name" : "ROSALINA",
 		"VARIANTS" : [
             {
-            "variant" : 0x01,
+            "variant" : 1,
             "name" : "ANDLUMA"
             }]
         },
         {
-        "id" : 0x05,
+        "id" : 5,
         "name" : "BOWSER",
 		"VARIANTS" : [
             {
-            "variant" : 0xFF,
+            "variant" : 255,
             "name" : "HAMMERSLAM"
             }]
         },
         {
-        "id" : 0x06,
+        "id" : 6,
         "name" : "BOWSERJR"
         },
         {
-        "id" : 0x07,
+        "id" : 7,
         "name" : "WARIO"
         },
         {
-        "id" : 0x08,
+        "id" : 8,
         "name" : "DONKEYKONG",
 		"VARIANTS" : [
             {
-            "variant" : 0xFF,
+            "variant" : 255,
             "name" : "TURBOCHARGE"
             }]
         },
         {
-        "id" : 0x09,
+        "id" : 9,
         "name" : "DIDDYKONG"
         },
         {
-        "id" : 0x0A,
+        "id" : 10,
         "name" : "TOAD"
         },
         {
-        "id" : 0x13,
+        "id" : 19,
         "name" : "DAISY"
         },
         {
-        "id" : 0x14,
+        "id" : 20,
         "name" : "WALUIGI"
         },
         {
-        "id" : 0x17,
+        "id" : 23,
         "name" : "BOO"
         }
 
     ]}
 
     ]
-
-}
