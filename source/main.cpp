@@ -10,9 +10,6 @@
 
 #define NUM_THREADS 2
 
-u32 threadA_stack[0x400];
-u32 threadB_stack[0x400];
-
 Result ret=0;
 u32 pos;
 FILE *f;
@@ -23,7 +20,6 @@ NFC_AmiiboConfig amiiboconfig;
 PrintConsole topScreen, bottomScreen;
 bool dataLoaded = 0;
 bool scan = 1;
-Handle thread[NUM_THREADS];
 
 void nfc()
 {
@@ -158,12 +154,9 @@ int main()
 	ThreadFunc nfcEntry;
 	nfcEntry = (*nfcLoop)();
 
-	//Thread mainThread = threadGetCurrent();
-	// int mainPriority = svcGetThreadPriority(mainThread);
+	Thread nfcThread;
 
-	Result thread_results[NUM_THREADS];
-
-	thread_results[0] = svcCreateThread(&thread[0], nfcEntry, 0, threadA_stack + 0x400, 0x3F, 0xFFFFFFFE);
+	nfcThread = threadCreate(nfcEntry,0, 0x800, 0x3F,0,0);
 
 	// Main loop
 	while (aptMainLoop())
