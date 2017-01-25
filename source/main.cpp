@@ -10,6 +10,8 @@
 
 #define NUM_THREADS 2
 
+#define STACKSIZE (4 * 1024)
+
 Result ret=0;
 u32 pos;
 FILE *f;
@@ -118,21 +120,20 @@ void nfc()
 
 }
 
-ThreadFunc nfcLoop()
+void nfcLoop(void *arg)
 {
     while(scan)
     {
         nfc();
         svcSleepThread(2000000000);
     }
-
-    return 0;
 }
 
 int main()
 {
-
+	// Initialize services
 	gfxInitDefault();
+
 	consoleInit(GFX_TOP, &topScreen);
 	consoleInit(GFX_BOTTOM, &bottomScreen);
     consoleSelect(&bottomScreen);
@@ -145,18 +146,26 @@ int main()
 	{
 		printf("romfs Init Successful!\n");
 	}
+	s32 prio;
 
+	rc = svcGetThreadPriority(&prio, CUR_PROCESS_HANDLE);
+
+	if (rc)
+		printf("PriorityInit: %08lX (%08lX)\n", prio, rc);
+	else
+	{
+		printf("Priority Init Successful! %08lX\n", prio);
+	}
 
 	//Load database
 
 	loadData();
 
-	ThreadFunc nfcEntry;
-	nfcEntry = (*nfcLoop)();
-
 	Thread nfcThread;
 
-	nfcThread = threadCreate(nfcEntry,0, 0x800, 0x3F,0,0);
+	nfcThread = threadCreate(nfcLoop,0, STACKSIZE, 0x3F,-2,true);
+
+	svcSetThreadPriority(prio-1,threadGetHandle(nfcThread));
 
 	// Main loop
 	while (aptMainLoop())
@@ -165,15 +174,20 @@ int main()
 		hidScanInput();
 
 		u32 kDown = hidKeysDown();
-
-		if (kDown & KEY_START)
-            scan = 0;
+		if (kDown & KEY_START) {
+			printf("Exiting...\n");
 			break; // break in order to return to hbmenu
+		}
 
-        consoleSelect(&bottomScreen);
-
+		gfxFlushBuffers();
+		gfxSwapBuffers();
 	}
+	printf("Waiting for NFC...\n");
+	scan=0;
+	nfcStopScanning();
+	threadFree(nfcThread);
 
+	printf("Waiting for GFX...\n");
 	gfxExit();
 	return 0;
 }
